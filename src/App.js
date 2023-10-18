@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { Navigate, Route, Routes } from "react-router-dom";
+import Sidebar from "./Component/Sidebar/Sidebar";
+import LoginPage from "./Pages/Login/Login";
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import ProtectedRoute from "./Component/Routes/PrivateRoute";
 
-function App() {
+function App() { 
+ 
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <ToastContainer />
+    <Routes>
+        <Route path="/" element={
+        <ProtectedRoute>
+        <Sidebar />
+        </ProtectedRoute>
+        } />
+        <Route path="/login" element={<LoginPage />} />
+      
+    </Routes>
+    </>
   );
 }
 
