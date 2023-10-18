@@ -12,6 +12,8 @@ import AddProduct from '../../Pages/Product/AddProduct/AddProduct';
 import AllProduct from '../../Pages/Product/AllProducts/AllProduct';
 import { useSelector } from 'react-redux'
 import Dashboard from '../../Pages/Dashboard/Dashboard';
+import Spinner from '../Spinner/Spinner';
+import Users from '../../Pages/Users/Users';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(window.innerWidth > 768);
@@ -19,7 +21,7 @@ const Sidebar = () => {
   const [tutorDropdown,setTutorDropdown] = useState(false)
   const [studentDropdown, setStudentDropdown] = useState(false)
   const [adminDropdown, setAdminDropdown]  = useState(false)
-  const { token } = useSelector(state => state.auth)
+  const { token ,loading} = useSelector(state => state.auth)
   console.log(token)
   // useEffect(() => {
   //   const handleResize = () => {
@@ -108,9 +110,9 @@ const Sidebar = () => {
     content = (
       <div>Session</div>
     );
-  }else if (selectedPage === 'chat') {
+  }else if (selectedPage === 'users') {
     content = (
-      <div>Chat</div>
+      <Users/>
     );
   }else if (selectedPage === 'content') {
     content = (
@@ -127,6 +129,8 @@ const Sidebar = () => {
   }
 
   return (
+    <>
+    {loading ? <Spinner/>:
     <div className={`h-screen flex overflow-y-auto`}>
       {isOpen && (
         <div className={`w-1/6 overflow-y-auto scrollbar bg-white border-r p-3 border-gray-200 `}>
@@ -267,20 +271,21 @@ const Sidebar = () => {
               )}
               <li className="mb-2">
                 <button
+                  onClick={() => handleLinkClick('users')}
+                  className={`flex items-center hover:bg-gray-200 py-2 w-full ${selectedPage === 'users' ? 'text-black bg-gray-200' : 'text-gray-400'}`}
+                >
+                  <span className="ml-2 flex text-xl  self-center "><HiUsers size={20} className='mt-1 mr-6' />Users</span>
+                </button>
+              </li>
+              <li className="mb-2">
+                <button
                   onClick={() => handleLinkClick('Session')}
                   className={`flex items-center hover:bg-gray-200 py-2 w-full ${selectedPage === 'Session' ? 'text-black bg-gray-200' : 'text-gray-400'}`}
                 >
                   <span className="ml-2 flex text-xl  self-center "><MdOutlineWatchLater size={20} className='mt-1 mr-6' />Sessions</span>
                 </button>
               </li>
-              <li className="mb-2">
-                <button
-                  onClick={() => handleLinkClick('chat')}
-                  className={`flex items-center hover:bg-gray-200 py-2 w-full ${selectedPage === 'chat' ? 'text-black bg-gray-200' : 'text-gray-400'}`}
-                >
-                  <span className="ml-2 flex text-xl  self-center "><AiOutlineWechat size={20} className='mt-1 mr-6' />Chats</span>
-                </button>
-              </li>
+              
               <li className="mb-2">
                 <button
                   onClick={() => handleLinkClick('content')}
@@ -321,7 +326,8 @@ const Sidebar = () => {
           <RiMenuLine size={30} />
         </button>
       )}
-    </div>
+    </div>}
+    </>
   );
 };
 

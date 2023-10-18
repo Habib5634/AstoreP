@@ -5,14 +5,18 @@ import { handleLogin } from '../../services/authService';
   const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add code here to handle form submission
-    console.log();
-    handleLogin(e, email, password)
-  };
+    const [loading, setLoading] = useState(false); // Add loading state
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Set loading to true when the form is submitted
+    try {
+      await handleLogin(e, email, password, setLoading); // Pass setLoading to handleLogin
+    } catch (error) {
+      setLoading(false); // Set loading to false if there is an error during login
+      console.error('Login failed:', error);
+    }
+  };
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full space-y-8">
@@ -61,10 +65,9 @@ import { handleLogin } from '../../services/authService';
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-             // Disable the button when loading
+              disabled={loading} // Disable the button when loading is true
             >
-              Login
-               {/* Change button text based on loading state */}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
             
