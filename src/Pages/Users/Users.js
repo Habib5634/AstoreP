@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {AiOutlineLeft,AiOutlineRight} from 'react-icons/ai'
-import data from './UsersData'
+// import data from './UsersData'
+import API from '../../services/API';
 
 
 const Users = () => {
@@ -8,8 +9,21 @@ const Users = () => {
     const [postPerPage] = useState(5);
     const [pagesToShow] = useState(5);
     const [menu, setMenu]= useState(false)
+    const [user,setUser] = useState([])
 
-    const totalPosts = data.length;
+    //get all users
+    const getUsers = async()=>{
+      try {
+          const { data } = await API.get('https://black-crab-tie.cyclic.app/event/getAllUser');
+          if (data) {
+              setUser(data);
+              // console.log(data);
+          }
+      } catch (error) {
+          console.log(error);
+      }
+  }
+    const totalPosts = user.length;
     const totalPageNumbers = Math.ceil(totalPosts / postPerPage);
 
     const handleToggleMenu = (itemId)=>{
@@ -45,8 +59,12 @@ const Users = () => {
 
     const indexOfLastPost = currentPage * postPerPage;
     const indexOfFirstPost = indexOfLastPost - postPerPage;
-    const currentPost = data.slice(indexOfFirstPost, indexOfLastPost);
+    const currentPost = user.slice(indexOfFirstPost, indexOfLastPost);
     
+    
+  useEffect(() => {
+      getUsers();
+  }, []);
   return (
     <>
     <div  className='mt-6 pl-4 pr-4'>
@@ -58,11 +76,10 @@ const Users = () => {
       <table className="min-w-full bg-white ">
         <thead>
           <tr className='text-gray-500'>
-            <th className="py-2 px-2 text-start border-b">Student</th>
-            <th className="py-2 px-4 text-start border-b">Class</th>
-            <th className="py-2 px-4 text-start border-b">Subject</th>
+            <th className="py-2 px-2 text-start border-b">Name</th>
+            
             <th className="py-2 px-4 text-start border-b">Email</th>
-            <th className="py-2 px-4 text-start border-b">Time Zone</th>
+           
             <th className="py-2 px-4 text-start border-b">Actions</th>
           
           </tr>
@@ -70,11 +87,8 @@ const Users = () => {
         <tbody>
           {currentPost.map((item, index) => (
             <tr key={item.id} className='hover:bg-slate-100'>
-              <td className="py-1.5 text-gray-500 px-2 text-sm  ">{item.user}</td>
-              <td className="py-1.5 text-gray-500 px-4 text-sm">{item.city}</td>
-              <td className="py-1.5 text-gray-500 px-4 text-sm">{item.phone}</td>
+              <td className="py-1.5 text-gray-500 px-2 text-sm  ">{item.name}</td>
               <td className="py-1.5 text-gray-500 px-4 text-sm">{item.email}</td>
-              <td className="py-1.5 text-gray-500 px-4 text-sm">{item.timeZone}</td>
               <td className="py-1.5 text-gray-500 px-4 text-sm relative" onClick={() => handleToggleMenu(item.id)}>{item.button}
               {menu == item.id &&(
                 <div className='absolute flex flex-col border p-2 space-y-2 z-50  bg-white'>

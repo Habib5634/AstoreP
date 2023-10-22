@@ -22,7 +22,7 @@ const Sidebar = () => {
   const [studentDropdown, setStudentDropdown] = useState(false)
   const [adminDropdown, setAdminDropdown]  = useState(false)
   const { token ,loading} = useSelector(state => state.auth)
-  console.log(token)
+ 
   // useEffect(() => {
   //   const handleResize = () => {
   //     setIsOpen(window.innerWidth > 768);

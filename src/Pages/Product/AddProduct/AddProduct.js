@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
+import API from '../../../services/API';
+import { useSelector } from 'react-redux';
 const AddProduct = () => {
   const categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4'];
+  
 
   const [formData, setFormData] = useState({
-    imageUrl: '',
-    hoveredImageUrl: '',
-    title: '',
+    imageUrls:[],
+    
+    name: '',
     category: [],
     price: '',
-    realPrice: '',
-    rating: '',
-    reviews: '',
-    descimg1:"",
-    descimg2:"",
-    descimg3:"",
-    descimg4:"",
-    descimg5:"",
-    descimg6:"",
-    descimg7:"",
-    descImage: '',
-    DescCategory: '',
-    widthTop: '',
-    widthBottom: '',
-    height: '',
-    depth: ''
+    description: '',
+    
+    weight: '',
+    
     
   });
 
@@ -46,60 +37,129 @@ const AddProduct = () => {
         }
       });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
+      if (name === 'category') {
+        const categories = value.split(','); // Separate categories using comma
+        setFormData({
+          ...formData,
+          [name]: categories
+        });
+      } else if (name === 'imageUrls') {
+        const urlsArray = value.split(',').map(url => url.trim()); // Split and trim URLs
+        setFormData({
+          ...formData,
+          [name]: urlsArray
+        });
+      } else {
+        const numericValue = !isNaN(value) ? parseFloat(value) : value;
+        setFormData({
+          ...formData,
+          [name]: numericValue
+        });
+      }
     }
   };
   
+  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Add code to handle form submission here
+  
+  
+    try {
+      const { data } = await API.post('https://black-crab-tie.cyclic.app/event/addEvent', {
+        imageUrls: formData.imageUrls,
+     
+      name: formData.name,
+      category: formData.category,
+      price: formData.price,
+      description: formData.description,
+      
+      weight: formData.weight,
+
+      });
+  
+      if (data) {
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.data.message) {
+        console.log(error.response.data.message);
+      }
+    }
+  
     console.log(formData);
   };
 
   return (
     <form onSubmit={handleSubmit} className=" mx-auto bg-white p-8 shadow-lg rounded-lg">
 <div className='flex'>
-    <div className='flex flex-col w-1/2 mr-3'>
-    <label>Image Url</label>
+    
+      <div className='flex flex-col w-1/2 mr-3'>
+  <label className="block text-gray-700 text-sm font-bold mb-2">Image URLs (comma separated)</label>
+  <input
+  type="text"
+  name="imageUrls"
+  value={formData.imageUrls.join(', ')} // Join the array with commas and spaces for display
+  onChange={handleChange}
+  placeholder="Image URLs"
+  className="w-full mb-4 p-2 border border-gray-300 rounded"
+/>
+</div>
+<div className='flex flex-col w-1/2 mr-3'>
+<label className="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
       <input
         type="text"
-        name="imageUrl"
-        value={formData.imageUrl}
+        name="name"
+        value={formData.name}
         onChange={handleChange}
-        placeholder="Image URL"
-        className="w-full  mb-4 p-2 border border-gray-300 rounded"
+        placeholder="Title"
+        className="w-full mb-4 p-2 border border-gray-300 rounded"
       />
+      </div>    
       </div>
-      <div className='flex flex-col w-1/2'>
-      <label>Image Url</label>
+      
+      <div className='flex'>
+      <div className='flex flex-col w-1/2 mr-3'>
+      <label className="block text-gray-700 text-sm font-bold mb-2">Product Price</label>
+      <input
+        type="number"
+        name="price"
+        value={formData.price}
+        onChange={handleChange}
+        placeholder="Price"
+        className="w-full mb-4 p-2 border border-gray-300 rounded"
+      />
+</div>
+<div className='flex flex-col w-1/2 '>
+<label className="block text-gray-700 text-sm font-bold mb-2">Product Description</label>
       <input
         type="text"
-        name="hoveredImageUrl"
-        value={formData.hoveredImageUrl}
+        name="description"
+        value={formData.description}
         onChange={handleChange}
-        placeholder="Hovered Image URL"
+        placeholder="Description"
         className="w-full mb-4 p-2 border border-gray-300 rounded"
       />
       </div>
       </div>
       <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
+      
+      <div className='flex flex-col w-1/2 '>
+      <label className="block text-gray-700 text-sm font-bold mb-2">Product Weight</label>
       <input
-        type="text"
-        name="title"
-        value={formData.title}
+        type="number"
+        name="weight"
+        value={formData.weight}
         onChange={handleChange}
-        placeholder="Title"
+        placeholder="Weight"
         className="w-full mb-4 p-2 border border-gray-300 rounded"
       />
       </div>
+      </div>
       <div className='flex flex-col w-1/2 '>
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Categories</label>
+        <label className="block text-gray-700 text-sm font-bold mb-2">Select Categories</label>
         {categories.map((category, index) => (
           <div key={index} className="mb-2">
             <label className="flex items-center">
@@ -116,178 +176,9 @@ const AddProduct = () => {
           </div>
         ))}
       </div>
+      
       </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="price"
-        value={formData.price}
-        onChange={handleChange}
-        placeholder="Price"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-</div>
-<div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="realPrice"
-        value={formData.realPrice}
-        onChange={handleChange}
-        placeholder="Real Price"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="rating"
-        value={formData.rating}
-        onChange={handleChange}
-        placeholder="Rating"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      <div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="reviews"
-        value={formData.reviews}
-        onChange={handleChange}
-        placeholder="Reviews"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="descimg1"
-        value={formData.descimg1}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      <div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="descimg2"
-        value={formData.descimg2}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="descimg3"
-        value={formData.descimg3}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      <div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="descimg4"
-        value={formData.descimg4}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="descimg5"
-        value={formData.descimg5}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      <div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="descimg6"
-        value={formData.descimg6}
-        onChange={handleChange}
-        placeholder="Images (comma separated)"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex'>
-      <div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="DescCategory"
-        value={formData.DescCategory}
-        onChange={handleChange}
-        placeholder="Description Category"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-<div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="widthTop"
-        value={formData.widthTop}
-        onChange={handleChange}
-        placeholder="Width Top"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <div className='flex '>
-<div className='flex flex-col w-1/2 mr-3'>
-      <input
-        type="text"
-        name="widthBottom"
-        value={formData.widthBottom}
-        onChange={handleChange}
-        placeholder="Width Bottom"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-<div className='flex flex-col w-1/2 '>
-      <input
-        type="text"
-        name="height"
-        value={formData.height}
-        onChange={handleChange}
-        placeholder="Height"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      </div>
-      </div>
-      <input
-        type="text"
-        name="depth"
-        value={formData.depth}
-        onChange={handleChange}
-        placeholder="Depth"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
-      <input
-        type="text"
-        name="descImage"
-        value={formData.descImage}
-        onChange={handleChange}
-        placeholder="Description Image"
-        className="w-full mb-4 p-2 border border-gray-300 rounded"
-      />
+      
       <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded mt-4">
         Submit
       </button>

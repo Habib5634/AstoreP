@@ -1,17 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
-import data from '../Product'
-import { BsStarFill, BsStarHalf, BsStar } from 'react-icons/bs'
+
+import API from '../../../services/API'
+import {BsThreeDotsVertical} from 'react-icons/bs'
 
 const AllProduct = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [postPerPage] = useState(5);
     const [pagesToShow] = useState(5);
     const [menu, setMenu] = useState(false)
+    const [product,setProduct] = useState([])
+//get all product
+const getProducts = async()=>{
+    try {
+        const { data } = await API.get('https://black-crab-tie.cyclic.app/event/getAllProduct');
+        if (data) {
+            setProduct(data)
+            console.log(data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-    const totalPosts = data.length;
+
+
+    const totalPosts = product.length;
     const totalPageNumbers = Math.ceil(totalPosts / postPerPage);
 
+
+    
     const handleToggleMenu = (itemId) => {
         setMenu(menu === itemId ? false : itemId);
     }
@@ -45,8 +63,13 @@ const AllProduct = () => {
 
     const indexOfLastPost = currentPage * postPerPage;
     const indexOfFirstPost = indexOfLastPost - postPerPage;
-    const currentPost = data.slice(indexOfFirstPost, indexOfLastPost);
+    const currentPost = product.slice(indexOfFirstPost, indexOfLastPost);
 
+
+    
+    useEffect   (() => {
+        getProducts();
+    }, []);
     return (
         <>
             <div className='mt-6 pl-4 pr-4'>
@@ -61,8 +84,7 @@ const AllProduct = () => {
                                 <th className="py-2 px-2 text-start border-b">Product Title</th>
                                 <th className="py-2 px-4 text-start border-b">Category</th>
                                 <th className="py-2 px-4 text-start border-b">Price</th>
-                                <th className="py-2 px-4 text-start border-b">Rating and Reviews</th>
-                                <th className="py-2 px-4 text-start border-b">Other Images</th>
+                                <th className="py-2 px-4 text-start border-b">Status</th>
                                 <th className="py-2 px-4 text-start border-b">Action</th>
 
                             </tr>
@@ -70,30 +92,13 @@ const AllProduct = () => {
                         <tbody>
                             {currentPost.map((item, index) => (
                                 <tr key={item.id} className='hover:bg-slate-100'>
-                                    <td className="py-1.5 text-gray-500 px-2 text-sm flex items-center "><img src={item.imageUrl} alt='profile' className='w-10 h-10 mr-2 rounded-full' />{item.title}</td>
+                                    <td className="py-1.5 text-gray-500 px-2 text-sm flex items-center "><img src={item.imageUrl} alt='profile' className='w-10 h-10 mr-2 rounded-full' />{item.name}</td>
                                     <td className="py-1.5 text-gray-500 px-4 text-sm">{item.category}</td>
-                                    <td className="py-1.5 text-gray-500 px-4 text-sm  "><span className='line-through text-gray-500'>{item.realPrice}</span><span className='text-black'>{item.price}</span></td>
-                                    <td className="py-1.5 text-gray-500 px-4 text-sm"> <span className='flex text-lime-500 space-x-1 self-start'>
-                                        {Array.from({ length: 5 }, (_, index) => {
-                                            if (index + 1 <= Math.floor(item.rating)) {
-                                                return <BsStarFill key={index} className="mt-1 text-lime-500" />;
-                                            } else if (index + 0.5 <= item.rating) {
-                                                return <BsStarHalf key={index} className="mt-1 text-lime-500" />;
-                                            } else {
-                                                return <BsStar key={index} className="mt-1 text-gray-300" />;
-                                            }
-                                        })}
-                                        <p className='text-gray-500'>{item.reviews} reviews</p>
-                                    </span></td>
-                                    <td className="py-1.5 text-gray-500 px-4 text-sm flex">
-                                        <img src={item.descimg1} alt='profile' className='w-10 h-10 mr-2 rounded-full' />
-                                        <img src={item.descimg2} alt='profile' className='w-10 h-10 mr-2 rounded-full' />
-                                        <img src={item.descimg3} alt='profile' className='w-10 h-10 mr-2 rounded-full' />
-                                        <img src={item.descimg4} alt='profile' className='w-10 h-10 mr-2 rounded-full' />
-                                        <img src={item.descimg5} alt='profile' className='w-10 h-10 mr-2 rounded-full' />
-                                        </td>
-                                    <td className="py-1.5 text-gray-500 px-4 text-sm relative" onClick={() => handleToggleMenu(item.id)}>{item.button}
-                                        {menu == item.id && (
+                                    <td className="py-1.5 text-gray-500 px-4 text-sm  ">{item.price}</td>
+                                   
+                                    <td className="py-1.5 text-gray-500 px-4 text-sm flex">{item.status}</td>
+                                    <td className="py-1.5 text-gray-500 px-4 text-sm relative" onClick={() => handleToggleMenu(item._id)}><BsThreeDotsVertical/>
+                                        {menu == item._id && (
                                             <div className='absolute flex flex-col border p-2 space-y-2 z-50  bg-white'>
                                                 <button>View</button>
                                                 <button>Edit</button>

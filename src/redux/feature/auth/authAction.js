@@ -8,7 +8,7 @@ export const userLogin = createAsyncThunk(
     'auth/login',
     async ({  email, password }, { rejectWithValue }) => {
         try {
-            const { data } = await API.post('https://jealous-lion-battledress.cyclic.app/signin/admin', {  email, password })
+            const { data } = await API.post('https://enchanting-capris-jay.cyclic.app/signin/admin', {  email, password })
             //store token
             if (data) {
                 localStorage.setItem('token', data.token);
@@ -72,3 +72,11 @@ export const userLogin = createAsyncThunk(
 //         }
 //     }
 // )
+
+// name,
+//           price,  
+//         weight,
+//           description,category,
+//           status,
+//           attendees,
+//           imageUrls
